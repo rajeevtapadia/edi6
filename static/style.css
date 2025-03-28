@@ -1,0 +1,65 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.search-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.summary-section {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.analysis-section {
+    margin: 10px 0;
+}
+
+.analysis-section .badge {
+    margin-right: 5px;
+    padding: 8px 12px;
+}
+
+#searchInput {
+    padding: 12px;
+    font-size: 16px;
+}
+
+.btn-primary {
+    padding: 12px 24px;
+    font-size: 16px;
+}
+
+h1 {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.card-title {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.card-text {
+    color: #34495e;
+}
+
+.summary-section h6 {
+    color: #2c3e50;
+    font-weight: 600;
+} 
