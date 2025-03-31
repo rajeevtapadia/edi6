@@ -42,21 +42,47 @@ def preprocess_text(text):
     tokens = [word for word in word_tokenize(text) if word not in stop_words]
     return " ".join(tokens)
 
+def generate_personalized_summary(text, user_profile):
+    """
+    Generate a personalized summary based on user's profile context
+    """
+    # Create a context-aware prompt for the summarizer
+    context = f"""
+    User Profile:
+    - Occupation: {user_profile.get('occupation', 'Not specified')}
+    - Purpose: {user_profile.get('purpose', 'Not specified')}
+    - Expertise: {user_profile.get('expertise', 'Not specified')}
+
+    Please provide a summary of the following text, focusing on aspects relevant to the user's profile:
+    {text}
+    """
+    
+    # Generate the summary with the context-aware prompt
+    summary = summarizer(context, max_length=100, min_length=30, do_sample=False)[0]['summary_text']
+    
+    # Clean up the summary by removing the context if it appears in the output
+    summary = summary.replace("User Profile:", "").replace("Occupation:", "").replace("Purpose:", "").replace("Expertise:", "")
+    summary = summary.replace("Please provide a summary of the following text, focusing on aspects relevant to the user's profile:", "")
+    
+    return summary.strip()
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/search', methods=['POST'])
 def search():
-    query = request.json.get('query', '').lower()
+    data = request.json
+    query = data.get('query', '').lower()
+    user_profile = data.get('userProfile', {})
     
     # Filter events based on query
     matching_events = df[df['text'].str.lower().str.contains(query)]
     
     results = []
     for _, event in matching_events.iterrows():
-        # Generate summary
-        summary = summarizer(event['text'], max_length=50, min_length=25, do_sample=False)[0]['summary_text']
+        # Generate personalized summary based on user profile
+        summary = generate_personalized_summary(event['text'], user_profile)
         
         # Get sentiment
         sentiment = sentiment_pipeline(event['text'])[0]['label']
