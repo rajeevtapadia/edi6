@@ -11,6 +11,29 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Event Search & Analysis</h1>
         
+        <!-- User Profile Section -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8">
+                <div class="profile-container">
+                    <h3 class="mb-3">Your Profile</h3>
+                    <div class="mb-3">
+                        <label for="occupation" class="form-label">Occupation</label>
+                        <input type="text" class="form-control" id="occupation" placeholder="e.g., News Reporter, Student, Business Professional">
+                    </div>
+                    <div class="mb-3">
+                        <label for="purpose" class="form-label">Purpose/Interest</label>
+                        <input type="text" class="form-control" id="purpose" placeholder="e.g., Covering Kumbh Mela, Research, Business">
+                    </div>
+                    <div class="mb-3">
+                        <label for="expertise" class="form-label">Areas of Expertise</label>
+                        <input type="text" class="form-control" id="expertise" placeholder="e.g., Technology, Sports, Politics">
+                    </div>
+                    <button onclick="saveProfile()" class="btn btn-primary">Save Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="search-container">
@@ -26,9 +49,28 @@
     </div>
 
     <script>
+        // Load profile data from localStorage when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            if (profile.occupation) document.getElementById('occupation').value = profile.occupation;
+            if (profile.purpose) document.getElementById('purpose').value = profile.purpose;
+            if (profile.expertise) document.getElementById('expertise').value = profile.expertise;
+        });
+
+        function saveProfile() {
+            const profile = {
+                occupation: document.getElementById('occupation').value,
+                purpose: document.getElementById('purpose').value,
+                expertise: document.getElementById('expertise').value
+            };
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+            alert('Profile saved successfully!');
+        }
+
         function searchEvents() {
             const query = document.getElementById('searchInput').value;
             const resultsDiv = document.getElementById('results');
+            const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
             
             // Show loading state
             resultsDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
@@ -38,7 +80,10 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ query: query })
+                body: JSON.stringify({ 
+                    query: query,
+                    userProfile: userProfile
+                })
             })
             .then(response => response.json())
             .then(data => {
@@ -57,7 +102,7 @@
                             <h5 class="card-title">Event ${event.id}</h5>
                             <p class="card-text">${event.text}</p>
                             <div class="summary-section">
-                                <h6>Summary:</h6>
+                                <h6>Personalized Summary:</h6>
                                 <p>${event.summary}</p>
                             </div>
                             <div class="analysis-section">
